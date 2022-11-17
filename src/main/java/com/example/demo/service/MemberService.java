@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.exception.Impl.AlreadyExistUserException;
 import com.example.demo.model.Auth;
 import com.example.demo.persist.entity.MemberEntity;
 import com.example.demo.persist.MemberRepository;
@@ -29,7 +30,7 @@ public class MemberService implements UserDetailsService {
     public MemberEntity register(Auth.SignUp member) {
         boolean exists = this.memberRepository.existsByUsername(member.getUsername());
         if (exists) {
-            throw new RuntimeException("이미 사용 중인 아이디 입니다.");
+            throw new AlreadyExistUserException();
         }
 
         member.setPassword(this.passwordEncoder.encode(member.getPassword()));

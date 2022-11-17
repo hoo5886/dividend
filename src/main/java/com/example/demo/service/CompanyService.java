@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.exception.Impl.NoCompanyException;
 import com.example.demo.model.Company;
 import com.example.demo.model.ScrapedResult;
 import com.example.demo.persist.CompanyRepository;
@@ -81,5 +82,16 @@ public class CompanyService {
 
     public void deleteAutocompleteKeyword(String keyword) {
         this.trie.remove(keyword);
+    }
+
+    public String deleteCompany(String ticker) {
+        var company = this.companyRepository.findByTicker(ticker)
+                                        .orElseThrow(() -> new NoCompanyException());
+
+        this.dividendRepository.deleteAllByCompanyId(company.getId());
+        this.companyRepository.delete(company);
+
+        this.deleteAutocompleteKeyword(company.getName());
+        return company.getName();
     }
 }
